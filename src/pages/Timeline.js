@@ -1,13 +1,40 @@
 import React, { Component } from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, FlatList } from 'react-native';
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
+import api from '../services/api'
+import Tweet from '../components/Tweet';
 
 export default class Timeline extends Component {
+    static navigationOptions = {
+        title: 'inicio',
+        headerRight: (
+            <TouchableOpacity onPress={() => { }}>
+                <Icon style={{ marginRight: 20 }} name="add-circle-outline" size={24} color="#4BB0EE" />
+            </TouchableOpacity>
+        )
+    };
+
+    state = {
+        tweets: []
+    }
+
+    async componentDidMount() {
+        const response = await api.get('tweets');
+
+        this.setState({ tweets: response.data });
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <Text>TimeLine</Text>
+                <FlatList
+                    data={this.state.tweets}
+                    keyExtractor={tweets => tweets._id}
+                    renderItem={({ item }) => <Tweet tweet={item} />}
+                />
             </View>
         );
     }
